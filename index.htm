@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 Cinematic Digital Celebration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ========== أساسيات الصفحة ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --gold: #ffd700;
+            --gold-dark: #b8860b;
+            --purple: #8b5cf6;
+            --black: #0a0a0f;
+        }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: white;
+        }
+
+        /* ========== خلفية وتأثيرات عامة ========== */
+        .animated-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(-45deg, #0a0a0f, #1a1a2e, #0d1b2a, #1a0a2e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            z-index: -2;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #particles-canvas, #celebration-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
+        }
+        #particles-canvas { z-index: -1; }
+        #celebration-canvas { z-index: 10; }
+
+        /* ========== شاشة التحميل (Preloader) ========== */
+        .preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .loader-ring {
+            width: 120px; height: 120px; border-radius: 50%;
+            border: 4px solid transparent; border-top-color: var(--gold); border-right-color: var(--purple);
+            animation: spin 1.5s linear infinite; position: relative;
+        }
+        .loader-text {
+            margin-top: 30px; font-size: 1.5rem;
+            background: linear-gradient(90deg, var(--gold), var(--purple), var(--gold));
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shimmer 2s linear infinite;
+        }
+        .loader-percent { font-size: 2rem; font-weight: 900; color: var(--gold); margin-top: 10px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes shimmer { to { background-position: 200% center; } }
+
+        /* ========== المسرح الرئيسي والكيكة ========== */
+        .main-stage {
+            min-height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; padding: 20px; position: relative;
+        }
+        .cake-container {
+            perspective: 1000px; position: relative; opacity: 0; transform: scale(0);
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .cake-container.visible { opacity: 1; transform: scale(1); }
+        .cake-container.explode { animation: cakeExplode 1s forwards; }
+        @keyframes cakeExplode {
+            0% { transform: scale(1); filter: brightness(1); }
+            30% { transform: scale(1.3); filter: brightness(2); }
+            100% { transform: scale(0); opacity: 0; filter: brightness(5); }
+        }
+        .cake {
+            width: 200px; height: 280px; position: relative; transform-style: preserve-3d;
+            animation: rotateCake 8s linear infinite;
+        }
+        @keyframes rotateCake { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+        .cake-layer {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .layer-1 { width: 180px; height: 60px; bottom: 0; background: linear-gradient(180deg, #8B4513 0%, #654321 50%, #4a2c0a 100%); border-radius: 10px; }
+        .layer-1::before { content: ''; position: absolute; top: -15px; left: 0; right: 0; height: 20px; background: linear-gradient(90deg, #ff69b4, #ff1493, #ff69b4); border-radius: 10px 10px 0 0; animation: icingDrip 2s ease-in-out infinite; }
+        .layer-2 { width: 140px; height: 55px; bottom: 65px; background: linear-gradient(180deg, #9B5523 0%, #754321 50%, #5a3c1a 100%); border-radius: 10px; }
+        .layer-2::before { content: ''; position: absolute; top: -12px; left: 0; right: 0; height: 18px; background: linear-gradient(90deg, #ffd700, #ffec8b, #ffd700); border-radius: 10px 10px 0 0; }
+        .layer-3 { width: 100px; height: 50px; bottom: 125px; background: linear-gradient(180deg, #A0522D 0%, #8B4513 50%, #6b3510 100%); border-radius: 10px; }
+        .layer-3::before { content: ''; position: absolute; top: -10px; left: 0; right: 0; height: 15px; background: linear-gradient(90deg, #8b5cf6, #a78bfa, #8b5cf6); border-radius: 10px 10px 0 0; }
+        .candles { position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; }
+        .candle { width: 8px; height: 40px; background: linear-gradient(180deg, #fff 0%, #ffecd2 100%); border-radius: 3px; position: relative; }
+        .flame {
+            position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 12px; height: 25px;
+            background: linear-gradient(0deg, #ff6b00, #ffd700, #fff);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.3s ease-in-out infinite alternate;
+            box-shadow: 0 0 20px #ffd700, 0 0 40px #ff6b00, 0 0 60px #ff4500;
+        }
+        @keyframes flicker { 0% { transform: translateX(-50%) scale(1) rotate(-2deg); } 100% { transform: translateX(-50%) scale(1.1) rotate(2deg); } }
+        .cake-glow {
+            position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);
+            border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: pulseGlow 2s ease-in-out infinite; pointer-events: none;
+        }
+        @keyframes pulseGlow { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; } 50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } }
+
+        /* ========== حاوية الشخص (مكان الوردة) ========== */
+        .person-container {
+            position: absolute; display: flex; flex-direction: column; align-items: center;
+            opacity: 0; transform: scale(0) translateY(100px);
+            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 5;
+        }
+        .person-container.visible { opacity: 1; transform: scale(1) translateY(0); }
+        .person-frame {
+            width: 250px; height: 250px; border-radius: 50%; padding: 8px;
+            background: linear-gradient(135deg, var(--gold), var(--purple), var(--gold));
+            background-size: 300% 300%; animation: borderRotate 3s linear infinite; position: relative;
+        }
+        @keyframes borderRotate { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        .person-image {
+            width: 100%; height: 100%; border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a2e, #0d1b2a);
+            position: relative; overflow: hidden;
+        }
+
+        /* Hologram Effect */
+        .person-image::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 92, 246, 0.1) 2px, rgba(139, 92, 246, 0.1) 4px);
+            animation: hologramScan 2s linear infinite; pointer-events: none; z-index: 50;
+        }
+        @keyframes hologramScan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        .person-image::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255,215,0,0.1), transparent, rgba(139,92,246,0.1), transparent);
+            animation: rotateHolo 4s linear infinite; pointer-events: none; z-index: 51;
+        }
+        @keyframes rotateHolo { to { transform: rotate(360deg); } }
+
+        .person-glow {
+            position: absolute; width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(139,92,246,0.4) 0%, rgba(255,215,0,0.2) 30%, transparent 70%);
+            border-radius: 50%; animation: personGlow 2s ease-in-out infinite alternate; z-index: -1;
+        }
+        @keyframes personGlow { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.3); opacity: 1; } }
+
+        /* ========== ستايلات الوردة ========== */
+        .flower-wrapper { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10; opacity: 0; pointer-events: none; }
+        .stem {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 0; background: linear-gradient(180deg, #27ae60 0%, #1e8449 100%);
+            border-radius: 3px; transform-origin: bottom center;
+        }
+        .leaf {
+            position: absolute; width: 20px; height: 10px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            border-radius: 0 70% 0 70%; opacity: 0; transform: scale(0);
+        }
+        .leaf-left { left: -15px; transform-origin: right center; }
+        .leaf-right { right: -15px; transform-origin: left center; transform: scaleX(-1) scale(0); }
+        .rose-head {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 40px; height: 40px; opacity: 0;
+        }
+        .petal {
+            position: absolute; top: 50%; left: 50%; width: 16px; height: 24px;
+            background: linear-gradient(180deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50% 50% 45% 45%; transform-origin: center bottom;
+            opacity: 0; transform: translate(-50%, -100%) scale(0);
+        }
+        .petal-inner { width: 14px; height: 20px; }
+        .petal-outer { width: 18px; height: 26px; }
+        .rose-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background: radial-gradient(circle, #f39c12 0%, #e67e22 60%, #d35400 100%);
+            border-radius: 50%; opacity: 0; z-index: 20;
+        }
+        .flower-glow {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 60px; height: 60px; background: radial-gradient(circle, rgba(231,76,60,0.5) 0%, transparent 70%);
+            border-radius: 50%; opacity: 0; z-index: -1;
+        }
+        .falling-petal {
+            position: absolute; width: 12px; height: 18px;
+            border-radius: 50% 50% 45% 45%; pointer-events: none; z-index: 5;
+        }
+
+        /* ========== النصوص والأزرار ========== */
+        .person-name {
+            margin-top: 30px; font-size: 2.5rem; font-weight: 900;
+            background: linear-gradient(90deg, var(--gold), #fff, var(--gold));
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shimmer 2s linear infinite; text-shadow: 0 0 30px rgba(255,215,0,0.5); text-align: center;
+        }
+        .celebration-text {
+            font-size: 1.5rem; color: var(--purple); margin-top: 10px; opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.5s; text-align: center;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .celebration-message {
+            position: fixed; top: 10%; left: 50%; transform: translateX(-50%); width: 100%;
+            font-size: 3rem; font-weight: 900; text-align: center; opacity: 0; z-index: 20;
+            background: linear-gradient(90deg, var(--gold), var(--purple), var(--gold));
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shimmer 2s linear infinite;
+        }
+        .celebration-message.visible { animation: messageReveal 1s ease forwards, shimmer 2s linear infinite; }
+        @keyframes messageReveal { 0% { opacity: 0; transform: translateX(-50%) scale(0.5); } 50% { transform: translateX(-50%) scale(1.2); } 100% { opacity: 1; transform: translateX(-50%) scale(1); } }
+
+        .start-btn {
+            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            padding: 20px 60px; font-size: 1.5rem; font-weight: 700; font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black);
+            border: none; border-radius: 50px; cursor: pointer; z-index: 100;
+            box-shadow: 0 10px 40px rgba(255,215,0,0.4); transition: all 0.3s ease; animation: pulse 2s ease-in-out infinite;
+        }
+        .start-btn:hover { transform: translateX(-50%) scale(1.1); box-shadow: 0 15px 50px rgba(255,215,0,0.6); }
+        .start-btn.hidden { opacity: 0; visibility: hidden; transform: translateX(-50%) scale(0); }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 10px 40px rgba(255,215,0,0.4); } 50% { box-shadow: 0 10px 60px rgba(255,215,0,0.8); } }
+
+        /* ========== البالونات والأشعة ========== */
+        .balloons-container { position: fixed; bottom: -150px; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+        .balloon {
+            position: absolute; width: 60px; height: 75px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            animation: floatUp 8s ease-in-out infinite; opacity: 0;
+        }
+        .balloon::before { content: ''; position: absolute; bottom: -30px; left: 50%; width: 2px; height: 50px; background: rgba(255,255,255,0.5); transform: translateX(-50%); }
+        .balloon::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 12px solid inherit; }
+        @keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.9; } 90% { opacity: 0.9; } 100% { transform: translateY(-120vh) rotate(15deg); opacity: 0; } }
+        
+        .light-rays { position: fixed; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-50%, -50%); pointer-events: none; opacity: 0; z-index: 3; }
+        .light-rays.visible { animation: lightRaysBurst 2s ease-out forwards; }
+        @keyframes lightRaysBurst { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(3); } }
+        .ray { position: absolute; top: 50%; left: 50%; width: 4px; height: 200px; background: linear-gradient(to top, transparent, var(--gold), transparent); transform-origin: bottom center; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .person-frame { width: 180px; height: 180px; }
+            .person-name { font-size: 1.8rem; }
+            .celebration-message { font-size: 2rem; padding: 0 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="preloader" id="preloader">
+        <div class="loader-ring"></div>
+        <div class="loader-text">Preparing Celebration...</div>
+        <div class="loader-percent" id="loader-percent">0%</div>
+    </div>
+
+    <div class="animated-bg"></div>
+    <canvas id="particles-canvas"></canvas>
+    <canvas id="celebration-canvas"></canvas>
+
+    <div class="light-rays" id="light-rays">
+        <script>
+            const lightRays = document.getElementById('light-rays');
+            for(let i = 0; i < 12; i++) {
+                const ray = document.createElement('div');
+                ray.className = 'ray';
+                ray.style.transform = `rotate(${i * 30}deg)`;
+                lightRays.appendChild(ray);
+            }
+        </script>
+    </div>
+
+    <div class="balloons-container" id="balloons-container"></div>
+    <div class="celebration-message" id="celebration-message">🎉 Happy Birthday! 🎉</div>
+
+    <div class="main-stage">
+        <div class="cake-container" id="cake-container">
+            <div class="cake-glow"></div>
+            <div class="cake">
+                <div class="cake-layer layer-1"></div>
+                <div class="cake-layer layer-2"></div>
+                <div class="cake-layer layer-3"></div>
+                <div class="candles">
+                    <div class="candle"><div class="flame"></div></div>
+                    <div class="candle"><div class="flame"></div></div>
+                    <div class="candle"><div class="flame"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="person-container" id="person-container">
+            <div class="person-glow"></div>
+            <div class="person-frame">
+                <div class="person-image" id="flower-stage"></div>
+            </div>
+            <h1 class="person-name">Cansu Polat</h1>
+            <p class="celebration-text">✨ Best Wishes for You ✨</p>
+        </div>
+    </div>
+
+    <button class="start-btn" id="start-btn">🎂 Start Celebration 🎉</button>
+
+    <audio id="bg-music" src="music.mp3" loop></audio>
+
+    <script>
+        // ========== CELEBRATION LOGIC ==========
+        const particlesCanvas = document.getElementById('particles-canvas');
+        const particlesCtx = particlesCanvas.getContext('2d');
+        const celebrationCanvas = document.getElementById('celebration-canvas');
+        const celebrationCtx = celebrationCanvas.getContext('2d');
+        let particles = [], confetti = [], fireworks = [], sparks = [];
+        let animationStarted = false;
+
+        function resizeCanvases() {
+            particlesCanvas.width = window.innerWidth; particlesCanvas.height = window.innerHeight;
+            celebrationCanvas.width = window.innerWidth; celebrationCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvases); resizeCanvases();
+
+        // Particles
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * particlesCanvas.width; this.y = Math.random() * particlesCanvas.height;
+                this.size = Math.random() * 3 + 1; this.speedX = (Math.random() - 0.5) * 0.5; this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2; this.color = Math.random() > 0.5 ? '#ffd700' : '#8b5cf6';
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if(this.x < 0 || this.x > particlesCanvas.width || this.y < 0 || this.y > particlesCanvas.height) this.reset();
+            }
+            draw() {
+                particlesCtx.beginPath(); particlesCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                particlesCtx.fillStyle = this.color; particlesCtx.globalAlpha = this.opacity; particlesCtx.fill(); particlesCtx.globalAlpha = 1;
+            }
+        }
+        function initParticles() { for(let i=0; i<100; i++) particles.push(new Particle()); }
+        function animateParticles() {
+            particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+            particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateParticles);
+        }
+
+        // Celebration Effects
+        class Confetti {
+            constructor() {
+                this.x = Math.random() * celebrationCanvas.width; this.y = -20; this.size = Math.random() * 10 + 5;
+                this.speedY = Math.random() * 3 + 2; this.speedX = (Math.random() - 0.5) * 4;
+                this.rotation = Math.random() * 360; this.rotationSpeed = (Math.random() - 0.5) * 10;
+                this.color = ['#ffd700', '#8b5cf6', '#ff69b4', '#00ff88', '#00bfff', '#ff4500'][Math.floor(Math.random()*6)];
+            }
+            update() { this.y += this.speedY; this.x += this.speedX; this.rotation += this.rotationSpeed; return this.y < celebrationCanvas.height + 50; }
+            draw() {
+                celebrationCtx.save(); celebrationCtx.translate(this.x, this.y); celebrationCtx.rotate(this.rotation * Math.PI/180);
+                celebrationCtx.fillStyle = this.color; celebrationCtx.fillRect(-this.size/2, -this.size/4, this.size, this.size/2); celebrationCtx.restore();
+            }
+        }
+        class Firework {
+            constructor() {
+                this.x = Math.random() * celebrationCanvas.width; this.y = celebrationCanvas.height;
+                this.targetY = Math.random() * celebrationCanvas.height * 0.5 + 50; this.exploded = false; this.particles = [];
+                this.color = ['#ffd700', '#8b5cf6', '#ff69b4', '#00ff88'][Math.floor(Math.random()*4)];
+            }
+            update() {
+                if(!this.exploded) { this.y -= 8; if(this.y <= this.targetY) this.explode(); }
+                else { this.particles = this.particles.filter(p => { p.x += p.sx; p.y += p.sy; p.sy += 0.1; p.life -= 0.02; return p.life > 0; }); }
+                return !this.exploded || this.particles.length > 0;
+            }
+            explode() {
+                this.exploded = true;
+                for(let i=0; i<80; i++) {
+                    const angle = (i/80)*Math.PI*2; const s = Math.random()*6+2;
+                    this.particles.push({ x:this.x, y:this.y, sx:Math.cos(angle)*s, sy:Math.sin(angle)*s, life:1, color:this.color });
+                }
+            }
+            draw() {
+                if(!this.exploded) {
+                    celebrationCtx.beginPath(); celebrationCtx.arc(this.x, this.y, 3, 0, Math.PI*2); celebrationCtx.fillStyle = this.color; celebrationCtx.fill();
+                } else {
+                    this.particles.forEach(p => {
+                        celebrationCtx.beginPath(); celebrationCtx.arc(p.x, p.y, 2, 0, Math.PI*2);
+                        celebrationCtx.fillStyle = p.color; celebrationCtx.globalAlpha = p.life; celebrationCtx.fill();
+                    });
+                }
+                celebrationCtx.globalAlpha = 1;
+            }
+        }
+        class Spark {
+            constructor(x, y) { this.x=x; this.y=y; this.life=1; this.sx=(Math.random()-0.5)*15; this.sy=(Math.random()-0.5)*15; }
+            update() { this.x+=this.sx; this.y+=this.sy; this.sx*=0.95; this.sy*=0.95; this.life-=0.03; return this.life>0; }
+            draw() {
+                celebrationCtx.beginPath(); celebrationCtx.arc(this.x, this.y, 3*this.life, 0, Math.PI*2);
+                celebrationCtx.fillStyle = '#ffd700'; celebrationCtx.globalAlpha = this.life; celebrationCtx.fill(); celebrationCtx.globalAlpha = 1;
+            }
+        }
+
+        function animateCelebration() {
+            celebrationCtx.clearRect(0,0,celebrationCanvas.width, celebrationCanvas.height);
+            confetti = confetti.filter(c => { c.draw(); return c.update(); });
+            fireworks = fireworks.filter(f => { f.draw(); return f.update(); });
+            sparks = sparks.filter(s => { s.draw(); return s.update(); });
+            requestAnimationFrame(animateCelebration);
+        }
+
+        // ========== FLOWER ANIMATION LOGIC ==========
+        const roseColors = [
+            { main: '#e74c3c', light: '#ff6b6b', dark: '#c0392b' },
+            { main: '#e91e63', light: '#f48fb1', dark: '#c2185b' },
+            { main: '#9c27b0', light: '#ce93d8', dark: '#7b1fa2' },
+            { main: '#f44336', light: '#ef5350', dark: '#d32f2f' }
+        ];
+
+        function createFlowerInsideCircle() {
+            const container = document.getElementById('flower-stage');
+            if(!container) return;
+
+            const flower = document.createElement('div');
+            flower.className = 'flower-wrapper';
+            const color = roseColors[Math.floor(Math.random() * roseColors.length)];
+            const stemHeight = 120 + Math.random() * 30; // Adjusted for circle size
+
+            flower.innerHTML = `
+                <div class="stem"></div>
+                <div class="leaf leaf-left" style="bottom: ${stemHeight * 0.4}px;"></div>
+                <div class="leaf leaf-right" style="bottom: ${stemHeight * 0.6}px;"></div>
+                <div class="rose-head">
+                    <div class="flower-glow"></div>
+                    <div class="petal petal-outer" style="transform: translate(-50%, -100%) rotate(0deg);"></div>
+                    <div class="petal petal-outer" style="transform: translate(-50%, -100%) rotate(45deg);"></div>
+                    <div class="petal petal-outer" style="transform: translate(-50%, -100%) rotate(90deg);"></div>
+                    <div class="petal petal-outer" style="transform: translate(-50%, -100%) rotate(135deg);"></div>
+                    <div class="petal petal-outer" style="transform: translate(-50%, -100%) rotate(180deg);"></div>
+                    <div class="petal petal-outer" style="transform: translate(-50%, -100%) rotate(225deg);"></div>
+                    <div class="petal petal-outer" style="transform: translate(-50%, -100%) rotate(270deg);"></div>
+                    <div class="petal petal-outer" style="transform: translate(-50%, -100%) rotate(315deg);"></div>
+                    <div class="petal petal-inner" style="transform: translate(-50%, -100%) rotate(22deg);"></div>
+                    <div class="petal petal-inner" style="transform: translate(-50%, -100%) rotate(67deg);"></div>
+                    <div class="petal petal-inner" style="transform: translate(-50%, -100%) rotate(112deg);"></div>
+                    <div class="petal petal-inner" style="transform: translate(-50%, -100%) rotate(157deg);"></div>
+                    <div class="petal petal-inner" style="transform: translate(-50%, -100%) rotate(202deg);"></div>
+                    <div class="petal petal-inner" style="transform: translate(-50%, -100%) rotate(247deg);"></div>
+                    <div class="petal petal-inner" style="transform: translate(-50%, -100%) rotate(292deg);"></div>
+                    <div class="petal petal-inner" style="transform: translate(-50%, -100%) rotate(337deg);"></div>
+                    <div class="rose-center"></div>
+                </div>
+            `;
+
+            container.appendChild(flower);
+
+            // Colorize petals
+            const petals = flower.querySelectorAll('.petal');
+            petals.forEach(p => {
+                if(p.classList.contains('petal-inner')) p.style.background = `linear-gradient(180deg, ${color.light} 0%, ${color.main} 100%)`;
+                else p.style.background = `linear-gradient(180deg, ${color.main} 0%, ${color.dark} 100%)`;
+            });
+
+            // Animate
+            const stem = flower.querySelector('.stem');
+            const leaves = flower.querySelectorAll('.leaf');
+            const roseHead = flower.querySelector('.rose-head');
+            const center = flower.querySelector('.rose-center');
+            const glow = flower.querySelector('.flower-glow');
+
+            flower.style.opacity = '1';
+            
+            // 1. Grow Stem
+            setTimeout(() => {
+                stem.style.transition = 'height 3s ease-out';
+                stem.style.height = stemHeight + 'px';
+            }, 100);
+
+            // 2. Leaves
+            setTimeout(() => {
+                leaves.forEach((leaf, i) => {
+                    setTimeout(() => {
+                        leaf.style.transition = 'all 1s ease-out';
+                        leaf.style.opacity = '1';
+                        if(leaf.classList.contains('leaf-left')) leaf.style.transform = 'scale(1) rotate(-30deg)';
+                        else leaf.style.transform = 'scaleX(-1) scale(1) rotate(-30deg)';
+                    }, i * 300);
+                });
+            }, 1000);
+
+            // 3. Move Head Up
+            roseHead.style.transition = 'top 3s ease-out, opacity 0.5s';
+            roseHead.style.top = -stemHeight + 'px';
+            setTimeout(() => roseHead.style.opacity = '1', 2000);
+
+            // 4. Bloom Petals
+            setTimeout(() => {
+                petals.forEach((p, i) => {
+                    setTimeout(() => {
+                        p.style.transition = 'all 0.8s ease-out';
+                        p.style.opacity = '1';
+                        const rot = i < 8 ? i * 45 : 22 + (i-8)*45;
+                        p.style.transform = `translate(-50%, -100%) rotate(${rot}deg) scale(1)`;
+                    }, i * 100);
+                });
+            }, 2500);
+
+            // 5. Center & Glow
+            setTimeout(() => {
+                center.style.transition = 'all 0.5s ease-out';
+                center.style.opacity = '1';
+                center.style.transform = 'translate(-50%, -50%) scale(1)';
+                glow.style.transition = 'opacity 1s ease';
+                glow.style.opacity = '1';
+            }, 4000);
+
+            // 6. Drop Petals
+            setTimeout(() => dropPetals(flower, petals, color), 6000);
+
+            // 7. Restart
+            setTimeout(() => {
+                flower.style.transition = 'opacity 1s';
+                flower.style.opacity = '0';
+                setTimeout(() => {
+                    flower.remove();
+                    createFlowerInsideCircle();
+                }, 1000);
+            }, 10000);
+        }
+
+        function dropPetals(flower, petals, color) {
+            const container = document.getElementById('flower-stage');
+            // Get positions relative to container
+            petals.forEach((p, i) => {
+                setTimeout(() => {
+                    p.style.opacity = '0';
+                    const falling = document.createElement('div');
+                    falling.className = 'falling-petal';
+                    falling.style.background = p.style.background;
+                    // Start from roughly center top of stem inside container
+                    falling.style.left = '50%';
+                    falling.style.top = '30%'; 
+                    container.appendChild(falling);
+
+                    // Animate fall
+                    let start = null;
+                    const duration = 2000 + Math.random()*1000;
+                    const sway = 30 + Math.random()*20;
+                    
+                    function anim(t) {
+                        if(!start) start = t;
+                        const prog = (t - start)/duration;
+                        if(prog < 1) {
+                            const y = 30 + (250 - 30) * prog; // Fall to bottom of circle (250px)
+                            const xOffset = Math.sin(prog * Math.PI * 4) * sway;
+                            falling.style.transform = `translate(-50%, 0) translate(${xOffset}px, ${y}px) rotate(${prog*360}deg)`;
+                            falling.style.opacity = 1 - prog;
+                            requestAnimationFrame(anim);
+                        } else {
+                            falling.remove();
+                        }
+                    }
+                    requestAnimationFrame(anim);
+                }, i * 150);
+            });
+        }
+
+        // ========== MAIN SEQUENCE ==========
+        function simulateLoading() {
+            let progress = 0;
+            const percentEl = document.getElementById('loader-percent');
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if(progress >= 100) {
+                    progress = 100; clearInterval(interval);
+                    setTimeout(() => document.getElementById('preloader').classList.add('hidden'), 500);
+                }
+                percentEl.textContent = Math.floor(progress) + '%';
+            }, 200);
+        }
+
+        function startCelebration() {
+            if(animationStarted) return;
+            animationStarted = true;
+            
+            document.getElementById('start-btn').classList.add('hidden');
+            const cake = document.getElementById('cake-container');
+            const person = document.getElementById('person-container');
+            const music = document.getElementById('bg-music');
+
+            // تشغيل الموسيقى فوراً
+            if(music) {
+                music.play().catch(e => console.log("Audio play failed:", e));
+            }
+            
+            cake.classList.add('visible');
+            
+            setTimeout(() => {
+                const rect = cake.getBoundingClientRect();
+                const x = rect.left + rect.width/2; const y = rect.top + rect.height/2;
+                document.getElementById('light-rays').classList.add('visible');
+                for(let i=0; i<30; i++) sparks.push(new Spark(x, y));
+                cake.classList.add('explode');
+                
+                setInterval(() => confetti.push(new Confetti()), 50);
+                setInterval(() => fireworks.push(new Firework()), 1000);
+                
+                setTimeout(() => document.getElementById('celebration-message').classList.add('visible'), 300);
+                
+                setTimeout(() => {
+                    person.classList.add('visible');
+                    // Start Growing Flower
+                    createFlowerInsideCircle();
+                    
+                    const pRect = person.getBoundingClientRect();
+                    for(let i=0; i<30; i++) sparks.push(new Spark(pRect.left+pRect.width/2, pRect.top+pRect.height/2));
+                }, 1000);
+
+                setTimeout(() => {
+                    const bCont = document.getElementById('balloons-container');
+                    for(let i=0; i<15; i++) {
+                        const b = document.createElement('div'); b.className='balloon';
+                        b.style.left = Math.random()*100+'%'; 
+                        b.style.background = `radial-gradient(circle at 30% 30%, ${['#ff69b4','#ffd700','#8b5cf6'][i%3]}, ${['#ff1493','#b8860b','#6d28d9'][i%3]})`;
+                        b.style.animationDuration = (6+Math.random()*4)+'s';
+                        bCont.appendChild(b);
+                        setTimeout(() => b.style.opacity='0.9', 100);
+                    }
+                }, 1500);
+
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            simulateLoading(); initParticles(); animateParticles(); animateCelebration();
+            document.getElementById('start-btn').addEventListener('click', startCelebration);
+        });
+    </script>
+</body>
+</html>
