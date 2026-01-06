@@ -297,14 +297,12 @@
             <div class="person-frame">
                 <div class="person-image" id="flower-stage"></div>
             </div>
-            <h1 class="person-name">Antonio Polat</h1>
+            <h1 class="person-name">ANTONIO</h1>
             <p class="celebration-text">✨ Best Wishes for You ✨</p>
         </div>
     </div>
 
     <button class="start-btn" id="start-btn">🎂 Start Celebration 🎉</button>
-
-    <audio id="bg-music" src="music.mp3" loop></audio>
 
     <script>
         // ========== CELEBRATION LOGIC ==========
@@ -582,12 +580,7 @@
             document.getElementById('start-btn').classList.add('hidden');
             const cake = document.getElementById('cake-container');
             const person = document.getElementById('person-container');
-            const music = document.getElementById('bg-music');
-
-            // تشغيل الموسيقى فوراً
-            if(music) {
-                music.play().catch(e => console.log("Audio play failed:", e));
-            }
+            // No music here anymore
             
             cake.classList.add('visible');
             
